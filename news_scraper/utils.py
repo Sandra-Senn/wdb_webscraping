@@ -13,7 +13,7 @@ def init_driver():
     """Initialisiert den Webdriver"""
 
     options = Options()
-    options.headless = False  # Browser sichtbar lassen
+    options.headless = True  # Browser unsichtbar lassen
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
