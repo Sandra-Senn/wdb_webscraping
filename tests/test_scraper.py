@@ -1,6 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
-from news_scraper import scrape_srf_news
-from utils import init_driver
+from news_scraper.scraper import scrape_srf_news
+from news_scraper.utils import init_driver
+
+
 
 def test_scraper_initialization():
     """Testet, ob der Webdriver korrekt initialisiert wird."""

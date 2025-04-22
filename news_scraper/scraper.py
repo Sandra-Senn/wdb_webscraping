@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
 
-from utils import init_driver, load_frontpage, get_article_info
+from news_scraper.utils import init_driver, load_frontpage, get_article_info
 
 import logging
 
@@ -18,7 +18,10 @@ logging.basicConfig(filename='scraping.log',  # Log-Datei
                     filemode='w')  # 'w' überschreibt die Datei bei jedem Skriptstart
 
 
-def scrape_srf_news(suchbegriff, anzahl_artikel=5):
+def scrape_srf_news(suchbegriff: str, anzahl_artikel: int=5) -> list:
+    if not suchbegriff.strip():
+        raise ValueError("Suchbegriff darf nicht leer sein.")
+    
     url = f"https://www.srf.ch/suche?q={suchbegriff}"
     driver = init_driver()
     
