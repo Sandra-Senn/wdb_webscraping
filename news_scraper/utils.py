@@ -7,13 +7,21 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import logging
+import os
 
 
 def init_driver():
     """Initialisiert den Webdriver"""
-
     options = Options()
-    options.headless = True  # Browser unsichtbar lassen
+    options.add_argument("--headless=new")  # Sicherer Headless-Modus
+    options.add_argument("--no-sandbox")    # Wichtig für CI/CD-Umgebungen
+    options.add_argument("--disable-dev-shm-usage")  # Speicherprobleme vermeiden
+    options.add_argument("--disable-gpu")   # GPU-Beschleunigung deaktivieren (für Headless)
+
+    # Debug: Verzeichnis-Problem vermeiden
+    if os.environ.get("CI"):
+        options.add_argument("--user-data-dir=/tmp/temporary-profile")
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
