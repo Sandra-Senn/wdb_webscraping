@@ -12,15 +12,46 @@ logging.basicConfig(filename='../log/scraping.log',  # Log-Datei
 
 
 
+# def scrape_srf_news(suchbegriff, anzahl_artikel=5):
+#     """    
+#     Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung
+#     """
+#     url = f"https://www.srf.ch/suche?q={suchbegriff}"
+    
+#     # Driver initialisieren
+#     driver = init_driver(headless=True)  # Headless-Modus für schnellere Ausführung
+    
+#     try:
+#         logging.info(f"Start Scraping mit Suchbegriff: {suchbegriff}")
+#         logging.info(f"Öffne URL: {url}")
+#         driver.get(url)
+
+#         articles = load_frontpage(driver, anzahl_artikel)
+#         final_articles = get_article_info(driver, articles, anzahl_artikel)
+        
+#         return final_articles
+    
+#     except Exception as e:
+#         logging.error(f"Fehler beim Scraping für '{suchbegriff}': {e}")
+#         return []
+    
+#     finally:
+#         # Sicherstellen, dass der Driver immer geschlossen wird
+#         driver.quit()
+#         logging.info(f"Scraping für '{suchbegriff}' abgeschlossen.")
 def scrape_srf_news(suchbegriff, anzahl_artikel=5):
-    """    
-    Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung
     """
+    Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung.
+    Wirft ValueError bei leerem Suchbegriff.
+    """
+    # Prüfe auf leeren oder nur aus Leerzeichen bestehenden Suchbegriff
+    if not suchbegriff or not suchbegriff.strip():
+        raise ValueError("Suchbegriff darf nicht leer sein!")
+
     url = f"https://www.srf.ch/suche?q={suchbegriff}"
-    
-    # Driver initialisieren
+
     driver = init_driver(headless=True)  # Headless-Modus für schnellere Ausführung
-    
+
     try:
         logging.info(f"Start Scraping mit Suchbegriff: {suchbegriff}")
         logging.info(f"Öffne URL: {url}")
@@ -28,13 +59,13 @@ def scrape_srf_news(suchbegriff, anzahl_artikel=5):
 
         articles = load_frontpage(driver, anzahl_artikel)
         final_articles = get_article_info(driver, articles, anzahl_artikel)
-        
+
         return final_articles
-    
+
     except Exception as e:
         logging.error(f"Fehler beim Scraping für '{suchbegriff}': {e}")
         return []
-    
+
     finally:
         # Sicherstellen, dass der Driver immer geschlossen wird
         driver.quit()
