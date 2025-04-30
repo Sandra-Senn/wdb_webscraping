@@ -3,8 +3,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from news_scraper.scraper import scrape_srf_news
-from news_scraper.utils import init_driver
+from src.scraper import scrape_srf_news
+from src.utils import init_driver
 
 
 
