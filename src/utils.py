@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import logging
 import time
-from concurrent.futures import ThreadPoolExecutor
+# from concurrent.futures import ThreadPoolExecutor
 
 def init_driver(headless=True):
     """
@@ -16,8 +16,8 @@ def init_driver(headless=True):
     """
     options = Options()
     if headless:
-        options.add_argument("--headless=chrom") # Headless-Modus für schnellere Ausführung
-    
+        options.add_argument("--headless=chrom") 
+
     # Performance-Optimierungen
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
