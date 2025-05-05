@@ -81,7 +81,7 @@ Alle vom Scraper erzeugten Daten.
 ### 📁 `src/`
 Der zentrale Quellcode des Projekts.
 
-- `__init__.py`: ??
+- `__init__.py`: Macht den Ordner zu einem Python-Paket, um Module zu importieren.
 - `scraper.py`: Hauptskript für das Scraping mit Selenium.
 - `utils.py`: Hilfsfunktionen.
 
@@ -106,11 +106,6 @@ Conda-Umgebung zur einfachen Reproduzierbarkeit (Alternative zu `requirements.tx
 
 ### 📄 `requirements.txt`
 Listet alle Python-Abhängigkeiten für Installation via `pip`.
-
----
-
-### 📄 `README.md`
-Beschreibt das Projekt, Setup, Ausführung, Datenstruktur und Analyse.
 
 
 ## Getting Started

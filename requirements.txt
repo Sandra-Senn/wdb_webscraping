@@ -8,3 +8,4 @@ beautifulsoup4==4.13.4
 pytest==8.3.5
 ipykernel==6.29.5
 jupyter_client==8.6.3
+squarify==0.4.4
