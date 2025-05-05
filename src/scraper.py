@@ -10,35 +10,6 @@ logging.basicConfig(filename='../log/scraping.log',  # Log-Datei
                     format='%(asctime)s - %(levelname)s - %(message)s',  # Log-Format
                     filemode='w')  # 'w' überschreibt die Datei bei jedem Skriptstart
 
-
-
-# def scrape_srf_news(suchbegriff, anzahl_artikel=5):
-#     """    
-#     Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung
-#     """
-#     url = f"https://www.srf.ch/suche?q={suchbegriff}"
-    
-#     # Driver initialisieren
-#     driver = init_driver(headless=True)  # Headless-Modus für schnellere Ausführung
-    
-#     try:
-#         logging.info(f"Start Scraping mit Suchbegriff: {suchbegriff}")
-#         logging.info(f"Öffne URL: {url}")
-#         driver.get(url)
-
-#         articles = load_frontpage(driver, anzahl_artikel)
-#         final_articles = get_article_info(driver, articles, anzahl_artikel)
-        
-#         return final_articles
-    
-#     except Exception as e:
-#         logging.error(f"Fehler beim Scraping für '{suchbegriff}': {e}")
-#         return []
-    
-#     finally:
-#         # Sicherstellen, dass der Driver immer geschlossen wird
-#         driver.quit()
-#         logging.info(f"Scraping für '{suchbegriff}' abgeschlossen.")
 def scrape_srf_news(suchbegriff, anzahl_artikel=5):
     """
     Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung.
