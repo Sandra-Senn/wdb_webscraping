@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import logging
 import time
+import traceback
 # from concurrent.futures import ThreadPoolExecutor
 
 def init_driver(headless=True):
@@ -51,7 +52,11 @@ def init_driver(headless=True):
 
 
 
-def load_frontpage(driver, anzahl_artikel, max_attempts=5):
+def load_frontpage(driver, anzahl_artikel, max_attempts=5, 
+                   mehr_button_xpath="//button[.//span[text()='Mehr anzeigen']]", 
+                   article_list_xpath=("ul", {"class": "collection-ng__teaser-list js-teaser-ng-list"}),
+                   articles_xpath=("li", {"class": "collection-ng__teaser-item js-teaser-ng-item"})):
+
     """
     Lädt die Frontpage und klickt wiederholt auf 'Mehr anzeigen', bis die gewünschte Anzahl an Artikeln geladen ist.
 
@@ -59,6 +64,10 @@ def load_frontpage(driver, anzahl_artikel, max_attempts=5):
         driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
         anzahl_artikel (int): Die gewünschte Anzahl an Artikeln, die geladen werden sollen.
         max_attempts (int): Maximale Anzahl an Wiederholungsversuchen, falls keine neuen Artikel geladen werden.
+        mehr_button_xpath (str): XPath des 'Mehr anzeigen'-Buttons.
+        article_list_xpath (tuple): XPath der Artikel-Liste (Tag, Attribute).
+        articles_xpath (tuple): XPath der einzelnen Artikel (Tag, Attribute).
+
 
     Returns:
         list[bs4.element.Tag]: Eine Liste von BeautifulSoup-Objekten der geladenen Artikel.
@@ -70,12 +79,12 @@ def load_frontpage(driver, anzahl_artikel, max_attempts=5):
         try:
             # Warten auf den "Mehr anzeigen"-Button
             WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Mehr anzeigen']]"))
+                EC.element_to_be_clickable((By.XPATH, mehr_button_xpath))
             )
             
             soup = BeautifulSoup(driver.page_source, "html.parser")
-            article_list = soup.find("ul", {"class": "collection-ng__teaser-list js-teaser-ng-list"})
-            articles = article_list.find_all("li", {"class": "collection-ng__teaser-item js-teaser-ng-item"}) if article_list else []
+            article_list = soup.find(article_list_xpath[0], article_list_xpath[1])
+            articles = article_list.find_all(articles_xpath[0], articles_xpath[1]) if article_list else []
             
             # Überprüfe, ob keine Artikel gefunden wurden
             if len(articles) == 0:
@@ -96,7 +105,7 @@ def load_frontpage(driver, anzahl_artikel, max_attempts=5):
             last_article_count = len(articles)
             
             # "Mehr anzeigen" klicken
-            mehr_buttons = driver.find_elements(By.XPATH, "//button[.//span[text()='Mehr anzeigen']]")
+            mehr_buttons = driver.find_elements(By.XPATH, mehr_button_xpath)
             
             if not mehr_buttons:
                 logging.info("Kein 'Mehr anzeigen'-Button mehr gefunden. Beende Suche.")
@@ -109,16 +118,19 @@ def load_frontpage(driver, anzahl_artikel, max_attempts=5):
         
         except Exception as e:
             logging.error(f"Fehler beim Laden der Frontpage: {e}")
+            logging.debug(traceback.format_exc())
             attempts += 1
     
     # Wenn max_attempts erreicht wurde, gib zurück, was wir haben
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    article_list = soup.find("ul", {"class": "collection-ng__teaser-list js-teaser-ng-list"})
-    articles = article_list.find_all("li", {"class": "collection-ng__teaser-item js-teaser-ng-item"}) if article_list else []
+    article_list = soup.find(article_list_xpath[0], article_list_xpath[1])
+    articles = article_list.find_all(articles_xpath[0], articles_xpath[1]) if article_list else []
     
     return articles[:anzahl_artikel]
 
-def process_article(driver, article_url, title):
+def process_article(driver, article_url, title,
+                    author_xpath="p.article-author__name span[itemprop='name']",
+                    category_xpath="a.breadcrumb__link",):
     """
     Besucht einen einzelnen Artikel und extrahiert Metadaten wie Autor, Kategorie und Unterkategorie.
 
@@ -126,6 +138,8 @@ def process_article(driver, article_url, title):
         driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
         article_url (str): Die URL des Artikels.
         title (str): Der Titel des Artikels (für Logging-Zwecke).
+        author_xpath (str): XPath des Autor-Elements.
+        category_xpath (str): XPath des Kategorie-Elements.
 
     Returns:
         tuple: Enthält Autor (str), Kategorie (str) und Unterkategorie (str) des Artikels.
@@ -141,23 +155,27 @@ def process_article(driver, article_url, title):
         article_soup = BeautifulSoup(driver.page_source, "html.parser")
         
         # Den Autor extrahieren
-        author_element = article_soup.select_one("p.article-author__name span[itemprop='name']")
+        author_element = article_soup.select_one(author_xpath)
         author = author_element.get_text(strip=True) if author_element else "Unbekannt"
         
         # Kategorie extrahieren
-        category_element = article_soup.select_one("a.breadcrumb__link")
+        category_element = article_soup.select_one(category_xpath)
         category = category_element.get_text(strip=True) if category_element else "Keine Kategorie"
         
         # Unterkategorie extrahieren
-        subcategory_element = article_soup.select("a.breadcrumb__link")[1] if len(article_soup.select("a.breadcrumb__link")) > 1 else None
+        subcategory_element = article_soup.select(category_xpath)[1] if len(article_soup.select(category_xpath)) > 1 else None
         subcategory = subcategory_element.get_text(strip=True) if subcategory_element else "Keine Unterkategorie"
     
     except Exception as e:
         logging.error(f"Fehler bei der Verarbeitung des Artikels '{title}': {e}")
+        logging.debug(traceback.format_exc())
     
     return author, category, subcategory
 
-def get_article_info(driver, articles, anzahl_artikel):
+def get_article_info(driver, articles, anzahl_artikel,
+                     title_xpath=".teaser-ng__title",
+                     date_xpath=".teaser-info",
+                     link_xpath="a.teaser-ng"):
     """
     Verarbeitet eine Liste von Artikeln und extrahiert strukturierte Informationen.
 
@@ -165,6 +183,9 @@ def get_article_info(driver, articles, anzahl_artikel):
         driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
         articles (list[bs4.element.Tag]): Liste von Artikel-Elementen.
         anzahl_artikel (int): Die Anzahl der Artikel, die verarbeitet werden sollen.
+        title_xpath (str): XPath des Titel-Elements.
+        date_xpath (str): XPath des Datums-Elements.
+        link_xpath (str): XPath des Link-Elements.
 
     Returns:
         list[dict]: Eine Liste von Wörterbüchern mit Artikeldaten (Titel, Datum, Autor, Kategorie, Unterkategorie).
@@ -176,9 +197,9 @@ def get_article_info(driver, articles, anzahl_artikel):
             logging.info(f"Verarbeite Artikel {index + 1}/{min(len(articles), anzahl_artikel)}:")
             
             # Titel und Datum extrahieren
-            title_element = article.select_one(".teaser-ng__title")
-            date_element = article.select_one(".teaser-info")
-            link_element = article.select_one("a.teaser-ng")
+            title_element = article.select_one(title_xpath)
+            date_element = article.select_one(date_xpath)
+            link_element = article.select_one(link_xpath)
             article_url = f"https://www.srf.ch{link_element['href']}" if link_element else None
             
             title = title_element.get_text(strip=True) if title_element else "Kein Titel"
@@ -203,5 +224,6 @@ def get_article_info(driver, articles, anzahl_artikel):
         
         except Exception as e:
             logging.error(f"Fehler beim Verarbeiten eines Artikels: {e}")
+            logging.debug(traceback.format_exc())
     
     return final_articles
