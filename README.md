@@ -8,7 +8,8 @@ Dieses Projekt automatisiert das Scrapen von Artikeln auf der Website der SRF (S
 WDB_WEBSCRAPING/
 ├── .github/workflows/pytest.yml                             
 ├── doc/
-│   └── Bewertungskriterien.xlsx     
+│   └── Bewertungskriterien.
+│   └── documentation.ipynb   
 ├── log/
 │   └── scraping.log                 
 ├── notebook/
@@ -41,6 +42,8 @@ Enthält Konfiguration für **GitHub Actions** zur Automatisierung von Tests.
 Dokumentation des Projekts.
 
 - `Bewertungskriterien.xlsx`: Bewertungsraster oder Aufgabenstellung.
+
+- `documentation.ipynb`: Dokumentation des Projekts.
 
 ---
 
@@ -82,6 +85,7 @@ Alle vom Scraper erzeugten Daten.
 Der zentrale Quellcode des Projekts.
 
 - `__init__.py`: Macht den Ordner zu einem Python-Paket, um Module zu importieren.
+- `eda.py`: Enthält Funktionen zur Datenanalyse und -visualisierung.
 - `scraper.py`: Hauptskript für das Scraping mit Selenium.
 - `utils.py`: Hilfsfunktionen.
 
