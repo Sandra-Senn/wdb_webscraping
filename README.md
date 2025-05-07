@@ -121,3 +121,5 @@ Für conda:
 conda install --file environment.txt
 ```
 
+Es wurde eine **Python 3.12** Umgebung verwendet.
+
