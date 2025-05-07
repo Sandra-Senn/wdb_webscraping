@@ -12,8 +12,17 @@ logging.basicConfig(filename='../log/scraping.log',  # Log-Datei
 
 def scrape_srf_news(suchbegriff, anzahl_artikel=5):
     """
-    Scrapt Artikel für einen Suchbegriff mit optimierter Ressourcennutzung.
-    Wirft ValueError bei leerem Suchbegriff.
+    Scrapt Artikel von SRF basierend auf einem Suchbegriff mit optimierter Ressourcennutzung.
+
+    Args:
+        suchbegriff (str): Der Begriff, nach dem auf der SRF-Website gesucht werden soll.
+        anzahl_artikel (int): Die maximale Anzahl von Artikeln, die geladen werden sollen.
+
+    Returns:
+        list[dict]: Eine Liste von Wörterbüchern mit Artikelinformationen. Gibt eine leere Liste zurück bei Fehlern.
+
+    Raises:
+        ValueError: Wenn der Suchbegriff leer oder ungültig ist.
     """
     # Prüfe auf leeren oder nur aus Leerzeichen bestehenden Suchbegriff
     if not suchbegriff or not suchbegriff.strip():
@@ -47,7 +56,14 @@ def scrape_srf_news(suchbegriff, anzahl_artikel=5):
 
 def process_search_term(suchbegriff, anzahl_artikel):
     """
-    Verarbeitet einen einzelnen Suchbegriff und gibt die Ergebnisse zurück
+    Verarbeitet einen einzelnen Suchbegriff und extrahiert Artikelinformationen.
+
+    Args:
+        suchbegriff (str): Der Begriff, nach dem gesucht wird.
+        anzahl_artikel (int): Die maximale Anzahl von Artikeln, die für diesen Begriff gesammelt werden sollen.
+
+    Returns:
+        list[dict]: Eine Liste von Wörterbüchern mit Artikeldaten, erweitert um den Suchbegriff.
     """
 
     logging.info(f"Starte Scraping für Suchbegriff: {suchbegriff}")
@@ -62,21 +78,20 @@ def process_search_term(suchbegriff, anzahl_artikel):
 
 def main(anzahl_artikel: int, suchbegriffe: list):
     """
-    Führt die Hauptlogik des Web-Scraping-Skripts aus, um Artikel basierend auf Suchbegriffen zu sammeln
-    und die Ergebnisse in einer CSV-Datei zu speichern.
+    Führt das komplette Scraping für eine Liste von Suchbegriffen durch und speichert die Ergebnisse in einer CSV-Datei.
 
     Args:
-        anzahl_artikel (int): Die maximale Anzahl von Artikeln, die pro Suchbegriff gesammelt werden sollen.
-        suchbegriffe (list): Eine Liste von Suchbegriffen, die für das Scraping verwendet werden.
+        anzahl_artikel (int): Die maximale Anzahl an Artikeln pro Suchbegriff.
+        suchbegriffe (list[str]): Liste von Suchbegriffen, für die Artikel gesammelt werden sollen.
+
     Returns:
-        pandas.DataFrame: Ein DataFrame, das die gesammelten Ergebnisse enthält. Falls keine Ergebnisse gefunden wurden,
-        wird ein leerer DataFrame zurückgegeben.
+        pandas.DataFrame: DataFrame mit allen gesammelten Artikeldaten. Gibt einen leeren DataFrame zurück, wenn keine Daten gefunden wurden.
+
     Ablauf:
-        1. Erstellt einen ThreadPoolExecutor mit einer maximalen Anzahl von Threads.
-        2. Führt die Funktion `process_search_term` für jeden Suchbegriff parallel aus.
-        3. Sammelt die Ergebnisse und fügt sie zu einer Liste hinzu.
-        4. Speichert die Ergebnisse in einer CSV-Datei, falls Ergebnisse vorhanden sind.
-        5. Gibt eine Warnung aus, falls keine Ergebnisse gefunden wurden.
+        1. Erstellt einen ThreadPoolExecutor zur parallelen Verarbeitung.
+        2. Ruft `process_search_term` für jeden Suchbegriff auf.
+        3. Sammelt und speichert alle Ergebnisse in einer CSV-Datei.
+        4. Gibt das Ergebnis als DataFrame zurück.
     """
 
     max_workers = 20

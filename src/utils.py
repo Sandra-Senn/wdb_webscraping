@@ -12,7 +12,13 @@ import time
 
 def init_driver(headless=True):
     """
-    Initialisiert den Webdriver mit optimierten Einstellungen
+    Initialisiert einen Chrome WebDriver mit optimierten Einstellungen.
+
+    Args:
+        headless (bool): Wenn True, wird der Browser im Headless-Modus gestartet.
+
+    Returns:
+        webdriver.Chrome: Der konfigurierte Chrome WebDriver.
     """
     options = Options()
     if headless:
@@ -46,7 +52,17 @@ def init_driver(headless=True):
 
 
 def load_frontpage(driver, anzahl_artikel, max_attempts=5):
-    """Lädt die Frontpage und klickt 'Mehr anzeigen' bis genügend Artikel geladen sind"""
+    """
+    Lädt die Frontpage und klickt wiederholt auf 'Mehr anzeigen', bis die gewünschte Anzahl an Artikeln geladen ist.
+
+    Args:
+        driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
+        anzahl_artikel (int): Die gewünschte Anzahl an Artikeln, die geladen werden sollen.
+        max_attempts (int): Maximale Anzahl an Wiederholungsversuchen, falls keine neuen Artikel geladen werden.
+
+    Returns:
+        list[bs4.element.Tag]: Eine Liste von BeautifulSoup-Objekten der geladenen Artikel.
+    """
     attempts = 0
     last_article_count = 0
     
@@ -103,7 +119,17 @@ def load_frontpage(driver, anzahl_artikel, max_attempts=5):
     return articles[:anzahl_artikel]
 
 def process_article(driver, article_url, title):
-    """Verarbeitet einen einzelnen Artikel-URL und extrahiert Metadaten"""
+    """
+    Besucht einen einzelnen Artikel und extrahiert Metadaten wie Autor, Kategorie und Unterkategorie.
+
+    Args:
+        driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
+        article_url (str): Die URL des Artikels.
+        title (str): Der Titel des Artikels (für Logging-Zwecke).
+
+    Returns:
+        tuple: Enthält Autor (str), Kategorie (str) und Unterkategorie (str) des Artikels.
+    """
     author = "Unbekannt"
     category = "Keine Kategorie"
     subcategory = "Keine Unterkategorie"
@@ -132,7 +158,17 @@ def process_article(driver, article_url, title):
     return author, category, subcategory
 
 def get_article_info(driver, articles, anzahl_artikel):
-    """Extrahiert Informationen aus den Artikeln mit optimierter Verarbeitung"""
+    """
+    Verarbeitet eine Liste von Artikeln und extrahiert strukturierte Informationen.
+
+    Args:
+        driver (webdriver.Chrome): Der WebDriver zur Steuerung des Browsers.
+        articles (list[bs4.element.Tag]): Liste von Artikel-Elementen.
+        anzahl_artikel (int): Die Anzahl der Artikel, die verarbeitet werden sollen.
+
+    Returns:
+        list[dict]: Eine Liste von Wörterbüchern mit Artikeldaten (Titel, Datum, Autor, Kategorie, Unterkategorie).
+    """
     final_articles = []
     
     for index, article in enumerate(articles[:anzahl_artikel]):
