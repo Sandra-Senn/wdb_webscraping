@@ -2,6 +2,7 @@ import pandas as pd
 from src.utils import init_driver, load_frontpage, get_article_info
 import logging
 import concurrent.futures
+import traceback
 
 
 # Logging konfigurieren
@@ -44,6 +45,7 @@ def scrape_srf_news(suchbegriff, anzahl_artikel=5):
 
     except Exception as e:
         logging.error(f"Fehler beim Scraping für '{suchbegriff}': {e}")
+        logging.debug(traceback.format_exc())
         return []
 
     finally:
