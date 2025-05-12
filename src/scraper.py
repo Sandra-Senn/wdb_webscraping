@@ -6,10 +6,12 @@ import traceback
 
 
 # Logging konfigurieren
-logging.basicConfig(filename='../log/scraping.log',  # Log-Datei
+logging.basicConfig(filename='../log/scraping_.log',  # Log-Datei
                     level=logging.INFO,  # Level der Log-Ausgaben
                     format='%(asctime)s - %(levelname)s - %(message)s',  # Log-Format
-                    filemode='w')  # 'w' überschreibt die Datei bei jedem Skriptstart
+                    filemode='w', # 'w' überschreibt die Datei bei jedem Skriptstart
+                    encoding='utf8'  # UTF-8 Encoding für die Log-Datei
+                    )  
 
 def scrape_srf_news(suchbegriff, anzahl_artikel=5):
     """

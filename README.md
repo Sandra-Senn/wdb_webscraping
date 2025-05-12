@@ -8,7 +8,7 @@ Dieses Projekt automatisiert das Scrapen von Artikeln auf der Website der SRF (S
 WDB_WEBSCRAPING/
 ├── .github/workflows/pytest.yml                             
 ├── doc/
-│   └── Bewertungskriterien.
+│   └── Bewertungskriterien.xlsx
 │   └── documentation.ipynb   
 ├── log/
 │   └── scraping.log                 
@@ -19,6 +19,7 @@ WDB_WEBSCRAPING/
 │   └── df_namen.csv           
 ├── src/
 │   ├── __init__.py
+│   ├── eda.py
 │   ├── scraper.py                
 │   └── utils.py               
 ├── tests/
